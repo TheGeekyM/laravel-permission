@@ -18,7 +18,7 @@ trait HasPermissions
     public static function bootHasPermissions()
     {
         static::deleting(function ($model) {
-            if (method_exists($model, 'isForceDeleting') && ! $model->isForceDeleting()) {
+            if (method_exists($model, 'isForceDeleting') && !$model->isForceDeleting()) {
                 return;
             }
 
@@ -28,7 +28,7 @@ trait HasPermissions
 
     public function getPermissionClass()
     {
-        if (! isset($this->permissionClass)) {
+        if (!isset($this->permissionClass)) {
             $this->permissionClass = app(PermissionRegistrar::class)->getPermissionClass();
         }
 
@@ -69,7 +69,7 @@ trait HasPermissions
             $query->whereHas('permissions', function ($query) use ($permissions) {
                 $query->where(function ($query) use ($permissions) {
                     foreach ($permissions as $permission) {
-                        $query->orWhere(config('permission.table_names.permissions').'.id', $permission->id);
+                        $query->orWhere(config('permission.table_names.permissions') . '.' . config('permission.column_names.model.id'), $permission->{onfig('permission.column_names.model.id')});
                     }
                 });
             });
@@ -77,7 +77,7 @@ trait HasPermissions
                 $query->orWhereHas('roles', function ($query) use ($rolesWithPermissions) {
                     $query->where(function ($query) use ($rolesWithPermissions) {
                         foreach ($rolesWithPermissions as $role) {
-                            $query->orWhere(config('permission.table_names.roles').'.id', $role->id);
+                            $query->orWhere(config('permission.table_names.roles') . '.' . config('permission.column_names.model.id'), $role->{onfig('permission.column_names.model.id')});
                         }
                     });
                 });
@@ -96,7 +96,7 @@ trait HasPermissions
             $permissions = $permissions->all();
         }
 
-        $permissions = is_array($permissions) ? $permissions : [$permissions];
+        $permissions = is_array($permissions) ? $permissions : [ $permissions ];
 
         return array_map(function ($permission) {
             if ($permission instanceof Permission) {
@@ -116,7 +116,7 @@ trait HasPermissions
      * @return bool
      * @throws PermissionDoesNotExist
      */
-    public function hasPermissionTo($permission, $guardName = null): bool
+    public function hasPermissionTo($permission, $guardName = NULL): bool
     {
         $permissionClass = $this->getPermissionClass();
 
@@ -134,7 +134,7 @@ trait HasPermissions
             );
         }
 
-        if (! $permission instanceof Permission) {
+        if (!$permission instanceof Permission) {
             throw new PermissionDoesNotExist;
         }
 
@@ -145,7 +145,7 @@ trait HasPermissions
      * @deprecated since 2.35.0
      * @alias of hasPermissionTo()
      */
-    public function hasUncachedPermissionTo($permission, $guardName = null): bool
+    public function hasUncachedPermissionTo($permission, $guardName = NULL): bool
     {
         return $this->hasPermissionTo($permission, $guardName);
     }
@@ -158,12 +158,12 @@ trait HasPermissions
      *
      * @return bool
      */
-    public function checkPermissionTo($permission, $guardName = null): bool
+    public function checkPermissionTo($permission, $guardName = NULL): bool
     {
         try {
             return $this->hasPermissionTo($permission, $guardName);
         } catch (PermissionDoesNotExist $e) {
-            return false;
+            return FALSE;
         }
     }
 
@@ -183,11 +183,11 @@ trait HasPermissions
 
         foreach ($permissions as $permission) {
             if ($this->checkPermissionTo($permission)) {
-                return true;
+                return TRUE;
             }
         }
 
-        return false;
+        return FALSE;
     }
 
     /**
@@ -205,12 +205,12 @@ trait HasPermissions
         }
 
         foreach ($permissions as $permission) {
-            if (! $this->hasPermissionTo($permission)) {
-                return false;
+            if (!$this->hasPermissionTo($permission)) {
+                return FALSE;
             }
         }
 
-        return true;
+        return TRUE;
     }
 
     /**
@@ -238,23 +238,23 @@ trait HasPermissions
 
         if (is_string($permission)) {
             $permission = $permissionClass->findByName($permission, $this->getDefaultGuardName());
-            if (! $permission) {
-                return false;
+            if (!$permission) {
+                return FALSE;
             }
         }
 
         if (is_int($permission)) {
             $permission = $permissionClass->findById($permission, $this->getDefaultGuardName());
-            if (! $permission) {
-                return false;
+            if (!$permission) {
+                return FALSE;
             }
         }
 
-        if (! $permission instanceof Permission) {
-            return false;
+        if (!$permission instanceof Permission) {
+            return FALSE;
         }
 
-        return $this->permissions->contains('id', $permission->id);
+        return $this->permissions->contains(config('permission.column_names.model.id'), $permission->{onfig('permission.column_names.model.id')});
     }
 
     /**
@@ -297,7 +297,7 @@ trait HasPermissions
             ->flatten()
             ->map(function ($permission) {
                 if (empty($permission)) {
-                    return false;
+                    return FALSE;
                 }
 
                 return $this->getStoredPermission($permission);
@@ -308,13 +308,13 @@ trait HasPermissions
             ->each(function ($permission) {
                 $this->ensureModelSharesGuard($permission);
             })
-            ->map->id
+            ->map->{config('permission.column_names.model.id')}
             ->all();
 
         $model = $this->getModel();
 
         if ($model->exists) {
-            $this->permissions()->sync($permissions, false);
+            $this->permissions()->sync($permissions, FALSE);
             $model->load('permissions');
         } else {
             $class = \get_class($model);
@@ -322,10 +322,10 @@ trait HasPermissions
             $class::saved(
                 function ($object) use ($permissions, $model) {
                     static $modelLastFiredOn;
-                    if ($modelLastFiredOn !== null && $modelLastFiredOn === $model) {
+                    if ($modelLastFiredOn !== NULL && $modelLastFiredOn === $model) {
                         return;
                     }
-                    $object->permissions()->sync($permissions, false);
+                    $object->permissions()->sync($permissions, FALSE);
                     $object->load('permissions');
                     $modelLastFiredOn = $object;
                 }
@@ -371,7 +371,7 @@ trait HasPermissions
 
     public function getPermissionNames(): Collection
     {
-        return $this->permissions->pluck('name');
+        return $this->permissions->pluck(config('permission.column_names.model.name'));
     }
 
     /**
@@ -393,8 +393,8 @@ trait HasPermissions
 
         if (is_array($permissions)) {
             return $permissionClass
-                ->whereIn('name', $permissions)
-                ->whereIn('guard_name', $this->getGuardNames())
+                ->whereIn(config('permission.column_names.model.name'), $permissions)
+                ->whereIn(config('permission.column_names.model.guard_name'), $this->getGuardNames())
                 ->get();
         }
 
@@ -408,8 +408,8 @@ trait HasPermissions
      */
     protected function ensureModelSharesGuard($roleOrPermission)
     {
-        if (! $this->getGuardNames()->contains($roleOrPermission->guard_name)) {
-            throw GuardDoesNotMatch::create($roleOrPermission->guard_name, $this->getGuardNames());
+        if (!$this->getGuardNames()->contains($roleOrPermission->{config('permission.column_names.model.guard_name')})) {
+            throw GuardDoesNotMatch::create($roleOrPermission->{config('permission.column_names.model.guard_name')}, $this->getGuardNames());
         }
     }
 
