@@ -81,7 +81,7 @@ trait HasRoles
         return $query->whereHas('roles', function ($query) use ($roles) {
             $query->where(function ($query) use ($roles) {
                 foreach ($roles as $role) {
-                    $query->orWhere(config('permission.table_names.roles').'.id', $role->id);
+                    $query->orWhere(config('permission.table_names.roles').'.'.config('permission.column_names.model.id'), $role->id);
                 }
             });
         });
@@ -111,7 +111,7 @@ trait HasRoles
             ->each(function ($role) {
                 $this->ensureModelSharesGuard($role);
             })
-            ->map->id
+            ->map->config('permission.column_names.model.id')
             ->all();
 
         $model = $this->getModel();
@@ -181,15 +181,15 @@ trait HasRoles
         }
 
         if (is_string($roles)) {
-            return $this->roles->contains('name', $roles);
+            return $this->roles->contains(config('permission.column_names.model.name'), $roles);
         }
 
         if (is_int($roles)) {
-            return $this->roles->contains('id', $roles);
+            return $this->roles->contains(config('permission.column_names.model.id'), $roles);
         }
 
         if ($roles instanceof Role) {
-            return $this->roles->contains('id', $roles->id);
+            return $this->roles->contains(config('permission.column_names.model.id'), $roles->id);
         }
 
         if (is_array($roles)) {
@@ -231,15 +231,15 @@ trait HasRoles
         }
 
         if (is_string($roles)) {
-            return $this->roles->contains('name', $roles);
+            return $this->roles->contains(config('permission.column_names.model.name'), $roles);
         }
 
         if ($roles instanceof Role) {
-            return $this->roles->contains('id', $roles->id);
+            return $this->roles->contains(config('permission.column_names.model.id'), $roles->id);
         }
 
         $roles = collect()->make($roles)->map(function ($role) {
-            return $role instanceof Role ? $role->name : $role;
+            return $role instanceof Role ? $role->{config('permission.column_names.model.name')} : $role;
         });
 
         return $roles->intersect($this->getRoleNames()) == $roles;
@@ -255,7 +255,7 @@ trait HasRoles
 
     public function getRoleNames(): Collection
     {
-        return $this->roles->pluck('name');
+        return $this->roles->pluck(config('permission.column_names.model.name'));
     }
 
     protected function getStoredRole($role): Role
