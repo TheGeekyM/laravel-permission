@@ -82,6 +82,12 @@ return [
          */
 
         'model_morph_key' => 'model_id',
+        
+         'model' => [
+            'id'         => 'Id',
+            'name'       => 'Name',
+            'guard_name' => 'GuardName'
+        ],
     ],
 
     /*
