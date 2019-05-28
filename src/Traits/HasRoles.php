@@ -44,7 +44,7 @@ trait HasRoles
             'model',
             config('permission.table_names.model_has_roles'),
             config('permission.column_names.model_morph_key'),
-            'role_id'
+            'RoleId'
         );
     }
 
@@ -81,7 +81,7 @@ trait HasRoles
         return $query->whereHas('roles', function ($query) use ($roles) {
             $query->where(function ($query) use ($roles) {
                 foreach ($roles as $role) {
-                    $query->orWhere(config('permission.table_names.roles').'.'.config('permission.column_names.model.id'), $role->id);
+                    $query->orWhere(config('permission.table_names.roles').'.'.config('permission.column_names.model.id'), $role->{config('permission.column_names.model.id')});
                 }
             });
         });
@@ -111,7 +111,7 @@ trait HasRoles
             ->each(function ($role) {
                 $this->ensureModelSharesGuard($role);
             })
-            ->map->config('permission.column_names.model.id')
+            ->map->{config('permission.column_names.model.id')}
             ->all();
 
         $model = $this->getModel();
@@ -189,7 +189,7 @@ trait HasRoles
         }
 
         if ($roles instanceof Role) {
-            return $this->roles->contains(config('permission.column_names.model.id'), $roles->id);
+            return $this->roles->contains(config('permission.column_names.model.id'), $roles->{config('permission.column_names.model.id')});
         }
 
         if (is_array($roles)) {
