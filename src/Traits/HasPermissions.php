@@ -69,7 +69,7 @@ trait HasPermissions
             $query->whereHas('permissions', function ($query) use ($permissions) {
                 $query->where(function ($query) use ($permissions) {
                     foreach ($permissions as $permission) {
-                        $query->orWhere(config('permission.table_names.permissions') . '.' . config('permission.column_names.model.id'), $permission->{onfig('permission.column_names.model.id')});
+                        $query->orWhere(config('permission.table_names.permissions') . '.' . config('permission.column_names.model.id'), $permission->{config('permission.column_names.model.id')});
                     }
                 });
             });
@@ -77,7 +77,7 @@ trait HasPermissions
                 $query->orWhereHas('roles', function ($query) use ($rolesWithPermissions) {
                     $query->where(function ($query) use ($rolesWithPermissions) {
                         foreach ($rolesWithPermissions as $role) {
-                            $query->orWhere(config('permission.table_names.roles') . '.' . config('permission.column_names.model.id'), $role->{onfig('permission.column_names.model.id')});
+                            $query->orWhere(config('permission.table_names.roles') . '.' . config('permission.column_names.model.id'), $role->{config('permission.column_names.model.id')});
                         }
                     });
                 });
@@ -137,7 +137,6 @@ trait HasPermissions
         if (!$permission instanceof Permission) {
             throw new PermissionDoesNotExist;
         }
-
         return $this->hasDirectPermission($permission) || $this->hasPermissionViaRole($permission);
     }
 
@@ -222,7 +221,7 @@ trait HasPermissions
      */
     protected function hasPermissionViaRole(Permission $permission): bool
     {
-        return $this->hasRole($permission->roles);
+        return $permission->hasRole($permission->roles);
     }
 
     /**
