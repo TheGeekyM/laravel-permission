@@ -254,7 +254,7 @@ trait HasPermissions
             return FALSE;
         }
 
-        return $this->permissions->contains(config('permission.column_names.model.id'), $permission->{onfig('permission.column_names.model.id')});
+        return $this->permissions->contains(config('permission.column_names.model.id'), $permission->{config('permission.column_names.model.id')});
     }
 
     /**
