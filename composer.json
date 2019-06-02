@@ -1,6 +1,6 @@
 {
-    "name": "spatie/laravel-permission",
-    "description": "Permission handling for Laravel 5.4 and up",
+    "name": "geeky/laravel-permission",
+    "description": "This is a fork of Spatia permission handling for Laravel 5.4 and up",
     "keywords": [
         "spatie",
         "laravel",
@@ -8,13 +8,18 @@
         "acl",
         "security"
     ],
-    "homepage": "https://github.com/spatie/laravel-permission",
+    "homepage": "https://github.com/TheGeekyM/laravel-permission",
     "license": "MIT",
     "authors": [
         {
             "name": "Freek Van der Herten",
             "email": "freek@spatie.be",
             "homepage": "https://spatie.be",
+            "role": "Developer"
+        },
+         {
+            "name": "Mohamed Emad Hamza",
+            "email": "thegeekym@gmail.com",
             "role": "Developer"
         }
     ],
