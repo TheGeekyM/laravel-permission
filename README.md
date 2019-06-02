@@ -69,7 +69,7 @@ This package can be used in Laravel 5.4 or higher. If you are using an older ver
 You can install the package via composer:
 
 ``` bash
-composer require spatie/laravel-permission
+composer require geeky/laravel-permission
 ```
 
 The service provider will automatically get registered. Or you may manually add the service provider in your `config/app.php` file:
